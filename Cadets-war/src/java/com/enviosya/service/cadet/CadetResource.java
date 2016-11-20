@@ -26,7 +26,7 @@ import javax.ws.rs.core.UriInfo;
  */
 @Path("cadet")
 public class CadetResource {
- @EJB
+    @EJB
     private CadetBean cadetBean;
 
     @Context
@@ -45,12 +45,13 @@ public class CadetResource {
     }
 
     @POST
-    @Path("addCadet")
+    @Path("add")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response agregar(String body) {
         Gson gson = new Gson();
         CadetEntity u = gson.fromJson(body, CadetEntity.class);
         Response r;
+        //System.out.println(u.toString()+ " GONZALO");
         CadetEntity creado = cadetBean.agregar(u);
         if (creado == null) {
             r = Response
@@ -67,7 +68,7 @@ public class CadetResource {
     }
 
     @POST
-    @Path("updateCadet")
+    @Path("update")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response modificar(String body) {
         Gson gson = new Gson();
@@ -87,8 +88,8 @@ public class CadetResource {
         }
         return r;
     }
-     @POST
-    @Path("deleteCadet")
+    @POST
+    @Path("delete")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response eliminar(String body) {
         Gson gson = new Gson();
