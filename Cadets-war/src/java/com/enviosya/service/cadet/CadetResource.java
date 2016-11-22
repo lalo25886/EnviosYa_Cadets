@@ -36,7 +36,7 @@ public class CadetResource {
     }
 
     @GET
-    @Path("getJson")
+    @Path("getCadets")
     @Produces(MediaType.APPLICATION_JSON)
     public String getJson() {
         List<CadetEntity> list = cadetBean.listar();
