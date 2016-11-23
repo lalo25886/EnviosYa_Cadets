@@ -1,6 +1,6 @@
-package com.enviosya.domain.cadet;
+package com.enviosya.cadet.domain;
 
-import com.enviosya.persistence.cadet.CadetEntity;
+import com.enviosya.cadet.persistence.CadetEntity;
 import com.google.gson.Gson;
 import java.util.List;
 import javax.annotation.PostConstruct;

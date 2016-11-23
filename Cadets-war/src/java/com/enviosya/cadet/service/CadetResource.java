@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.enviosya.service.cadet;
+package com.enviosya.cadet.service;
 
-import com.enviosya.domain.cadet.CadetBean;
-import com.enviosya.persistence.cadet.CadetEntity;
+import com.enviosya.cadet.domain.CadetBean;
+import com.enviosya.cadet.persistence.CadetEntity;
 import com.google.gson.Gson;
 import java.util.List;
 import javax.ejb.EJB;

@@ -1,4 +1,4 @@
-package com.enviosya.persistence.cadet;
+package com.enviosya.cadet.persistence;
 
 import java.io.Serializable;
 import javax.persistence.Column;

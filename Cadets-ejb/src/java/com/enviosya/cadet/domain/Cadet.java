@@ -1,4 +1,4 @@
-package com.enviosya.domain.cadet;
+package com.enviosya.cadet.domain;
 
 import java.util.Objects;
 
