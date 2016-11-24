@@ -98,9 +98,9 @@ public class Cadet {
 
     @Override
     public String toString() {
-        return "Cadet{" + "ID=" + id + ", "
-                + "Nombre=" + nombre + ", "
-                + "Apellido=" + apellido + '}';
+        return  "ID = " + id + ", "
+                + "Nombre = " + nombre + ", "
+                + "Apellido = " + apellido;
     }
 
    
