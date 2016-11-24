@@ -96,6 +96,13 @@ public class Cadet {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "Cadet{" + "ID=" + id + ", "
+                + "Nombre=" + nombre + ", "
+                + "Apellido=" + apellido + '}';
+    }
+
    
     
 }
