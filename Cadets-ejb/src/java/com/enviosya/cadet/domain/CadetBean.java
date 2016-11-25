@@ -115,4 +115,8 @@ public CadetEntity agregar(CadetEntity unCadete) {
         .setParameter("nombre", nombre).getResultList();
         return listaCadetes;
     }
+   public String buscarCadete(Long id) {
+        CadetEntity unCadeteEntity = em.find(CadetEntity.class, id);
+        return unCadeteEntity.getEmail();
+    }
 }

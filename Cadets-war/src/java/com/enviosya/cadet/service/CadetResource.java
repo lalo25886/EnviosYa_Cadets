@@ -14,6 +14,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -43,6 +44,15 @@ public class CadetResource {
         Gson gson = new Gson();
         return gson.toJson(list);
     }
+    @GET
+    @Path("getCadet/{id}")
+    @Consumes(MediaType.TEXT_HTML)
+    public String getCadeteNotificar(@PathParam("id") String id) {
+        CadetEntity unCadet = new CadetEntity();
+        unCadet.setId(Long.parseLong(id));
+        String retorno = cadetBean.buscarCadete(unCadet.getId());
+        return retorno;
+    }
 
     @POST
     @Path("add")
@@ -51,7 +61,6 @@ public class CadetResource {
         Gson gson = new Gson();
         CadetEntity u = gson.fromJson(body, CadetEntity.class);
         Response r;
-        //System.out.println(u.toString()+ " GONZALO");
         CadetEntity creado = cadetBean.agregar(u);
         if (creado == null) {
             r = Response
