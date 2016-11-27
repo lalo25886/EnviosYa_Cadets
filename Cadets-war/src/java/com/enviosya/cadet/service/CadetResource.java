@@ -67,11 +67,12 @@ public class CadetResource {
         try {
             CadetEntity u = gson.fromJson(body, CadetEntity.class);
             creado = cadetBean.agregar(u);
-        } catch (Exception e) {
+        } catch (DatoErroneoException e) {
             r = Response
                     .status(Response.Status.CONFLICT)
                     .entity("Cadet")
                     .build();
+            return r;
         }
         r = Response
                 .status(Response.Status.CREATED)
@@ -87,18 +88,20 @@ public class CadetResource {
         Gson gson = new Gson();
         CadetEntity u = gson.fromJson(body, CadetEntity.class);
         Response r;
-        CadetEntity modificado = cadetBean.modificar(u);
-        if (modificado == null) {
-            r = Response
+        CadetEntity modificado = null;
+        try {
+            modificado = cadetBean.modificar(u);
+        } catch (EntidadNoExisteException e) {
+             r = Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity("Cadet")
                     .build();
-        } else {
-            r = Response
-                    .status(Response.Status.CREATED)
-                    .entity(gson.toJson(modificado))
-                    .build();
+             return r;
         }
+        r = Response
+                .status(Response.Status.CREATED)
+                .entity(gson.toJson(modificado))
+                .build();
         return r;
     }
     @POST
