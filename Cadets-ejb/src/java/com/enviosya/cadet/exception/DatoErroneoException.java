@@ -9,7 +9,7 @@ package com.enviosya.cadet.exception;
  *
  * @author Gonzalo
  */
-public class DatoErroneoException extends Exception {
+public class DatoErroneoException extends Exception{
 
     public DatoErroneoException() {
         super();

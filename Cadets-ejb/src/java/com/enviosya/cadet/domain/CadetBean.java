@@ -38,7 +38,8 @@ public CadetEntity agregar(CadetEntity unCadete) throws DatoErroneoException {
         return unCadete;
     }
 
-    public CadetEntity agregar(String body) throws DatoErroneoException {
+    public CadetEntity agregar(String body) 
+            throws DatoErroneoException {
        CadetEntity unCadete = null;
         try {
             Gson gson = new Gson();

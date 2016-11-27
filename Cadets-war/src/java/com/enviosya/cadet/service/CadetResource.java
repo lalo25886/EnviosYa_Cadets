@@ -62,20 +62,21 @@ public class CadetResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response agregar(String body) throws DatoErroneoException {
         Gson gson = new Gson();
-        CadetEntity u = gson.fromJson(body, CadetEntity.class);
         Response r;
-        CadetEntity creado = cadetBean.agregar(u);
-        if (creado == null) {
+        CadetEntity creado = null;
+        try {
+            CadetEntity u = gson.fromJson(body, CadetEntity.class);
+            creado = cadetBean.agregar(u);
+        } catch (Exception e) {
             r = Response
-                    .status(Response.Status.BAD_REQUEST)
+                    .status(Response.Status.CONFLICT)
                     .entity("Cadet")
                     .build();
-        } else {
-            r = Response
-                    .status(Response.Status.CREATED)
-                    .entity(gson.toJson(creado))
-                    .build();
         }
+        r = Response
+                .status(Response.Status.CREATED)
+                .entity(gson.toJson(creado))
+                .build();
         return r;
     }
 
