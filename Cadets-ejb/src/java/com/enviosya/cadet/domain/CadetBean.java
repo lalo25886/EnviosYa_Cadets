@@ -32,7 +32,7 @@ public CadetEntity agregar(CadetEntity unCadete) throws DatoErroneoException {
         } catch (Exception e) {
             log.error("Error al agregar:" + this.getClass().toString()
                     + e.getMessage());
-            throw new DatoErroneoException("Error al agregar un cadete.\\n"
+            throw new DatoErroneoException("Error al agregar un cadete. "
                     + "Verifique los datos ingresados.");
         }
         return unCadete;
@@ -53,7 +53,8 @@ public CadetEntity agregar(CadetEntity unCadete) throws DatoErroneoException {
         }
        return unCadete;
     }
-    public CadetEntity modificar(Long id, String nombreNuevo) throws EntidadNoExisteException {
+    public CadetEntity modificar(Long id, String nombreNuevo)
+            throws EntidadNoExisteException {
         try {
             CadetEntity unCadete = em.find(CadetEntity.class, id);
             unCadete.setNombre(nombreNuevo);
