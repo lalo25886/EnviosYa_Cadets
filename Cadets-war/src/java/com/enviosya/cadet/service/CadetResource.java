@@ -6,6 +6,8 @@
 package com.enviosya.cadet.service;
 
 import com.enviosya.cadet.domain.CadetBean;
+import com.enviosya.cadet.exception.DatoErroneoException;
+import com.enviosya.cadet.exception.EntidadNoExisteException;
 import com.enviosya.cadet.persistence.CadetEntity;
 import com.google.gson.Gson;
 import java.util.List;
@@ -47,7 +49,8 @@ public class CadetResource {
     @GET
     @Path("getCadet/{id}")
     @Consumes(MediaType.TEXT_HTML)
-    public String getCadeteNotificar(@PathParam("id") String id) {
+    public String getCadeteNotificar(@PathParam("id") String id) 
+    throws EntidadNoExisteException {
         CadetEntity unCadet = new CadetEntity();
         unCadet.setId(Long.parseLong(id));
         String retorno = cadetBean.buscarCadete(unCadet.getId());
@@ -57,7 +60,7 @@ public class CadetResource {
     @POST
     @Path("add")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response agregar(String body) {
+    public Response agregar(String body) throws DatoErroneoException {
         Gson gson = new Gson();
         CadetEntity u = gson.fromJson(body, CadetEntity.class);
         Response r;
@@ -79,7 +82,7 @@ public class CadetResource {
     @POST
     @Path("update")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response modificar(String body) {
+    public Response modificar(String body) throws EntidadNoExisteException {
         Gson gson = new Gson();
         CadetEntity u = gson.fromJson(body, CadetEntity.class);
         Response r;
