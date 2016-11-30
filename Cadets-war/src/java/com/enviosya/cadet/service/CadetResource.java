@@ -11,7 +11,10 @@ import com.enviosya.cadet.exception.EntidadNoExisteException;
 import com.enviosya.cadet.persistence.CadetEntity;
 import com.google.gson.Gson;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.persistence.PersistenceException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -60,25 +63,47 @@ public class CadetResource {
     @POST
     @Path("add")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response agregar(String body) throws DatoErroneoException {
+    public Response agregar(String body) {
         Gson gson = new Gson();
+        String  ret = gson.toJson("Error al agregar un cadete. "
+                + "Verifique los datos ingresados");
+        String existe = "El cadete ya existe en la base de datos";
         Response r;
-        CadetEntity creado = null;
+        String vacio = "";
+        CadetEntity u;
+        CadetEntity creado;
         try {
-            CadetEntity u = gson.fromJson(body, CadetEntity.class);
+            u = gson.fromJson(body, CadetEntity.class);
+            if (cadetBean.existeCadete(u.getCi())) {
+                return Response
+                        .status(Response.Status.ACCEPTED)
+                        .entity(existe)
+                        .build();
+            }
+            if (u.getEmail().equalsIgnoreCase(vacio)
+                || u.getNombre().equalsIgnoreCase(vacio)
+                || u.getVehiculoMatricula().equalsIgnoreCase(vacio)
+                || u.getVehiculoDescripcion().equalsIgnoreCase(vacio)) {
+                return Response
+                        .status(Response.Status.ACCEPTED)
+                        .entity(ret)
+                        .build();
+            }
             creado = cadetBean.agregar(u);
-        } catch (DatoErroneoException e) {
-            r = Response
-                    .status(Response.Status.CONFLICT)
-                    .entity("Cadet")
-                    .build();
-            return r;
+        } catch (DatoErroneoException ex) {
+           return Response
+                   .status(Response.Status.ACCEPTED)
+                   .entity(ret)
+                   .build();
+        } catch (EntidadNoExisteException ex) {
+           return Response
+                   .status(Response.Status.ACCEPTED)
+                   .entity(existe).build();
         }
-        r = Response
-                .status(Response.Status.CREATED)
-                .entity(gson.toJson(creado))
-                .build();
-        return r;
+        return Response
+                    .status(Response.Status.CREATED)
+                    .entity(gson.toJson(creado))
+                    .build();
     }
 
     @POST
@@ -86,22 +111,31 @@ public class CadetResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response modificar(String body) throws EntidadNoExisteException {
         Gson gson = new Gson();
+        String  ret = gson.toJson("Error al modificar un cadete. "
+                + "Verifique los datos ingresados");
+        String existe = "El cadete no existe en la base de datos";
         CadetEntity u = gson.fromJson(body, CadetEntity.class);
         Response r;
-        CadetEntity modificado = null;
+        CadetEntity modificado;
         try {
+            if (!cadetBean.existeCadete(u.getCi())) {
+                return Response
+                        .status(Response.Status.ACCEPTED)
+                        .entity(existe)
+                        .build();
+            }
             modificado = cadetBean.modificar(u);
-        } catch (EntidadNoExisteException e) {
-             r = Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity("Cadet")
-                    .build();
-             return r;
-        }
-        r = Response
+            r = Response
                 .status(Response.Status.CREATED)
                 .entity(gson.toJson(modificado))
                 .build();
+        } catch (EntidadNoExisteException e) {
+            r = Response
+                .status(Response.Status.ACCEPTED)
+                .entity(ret)
+                .build();
+            return r;
+        }
         return r;
     }
     @POST
@@ -109,18 +143,29 @@ public class CadetResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response eliminar(String body) {
         Gson gson = new Gson();
+        String  ret = gson.toJson("Error al eliminar un cadete. "
+                + "Verifique los datos.");
+        String ok = "El cadete fue eliminado exitosamente";
+        String existe = "El cadete no existe en la base de datos";
         CadetEntity u = gson.fromJson(body, CadetEntity.class);
         Response r;
-        Boolean modificado = cadetBean.eliminar(u);
-        if (!modificado) {
+        Boolean modificado;
+        try {
+            if (!cadetBean.existeCadete(u.getCi())) {
+                return Response
+                        .status(Response.Status.ACCEPTED)
+                        .entity(existe)
+                        .build();
+            }
+            modificado = cadetBean.eliminar(u);
             r = Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity("Cadete")
-                    .build();
-        } else {
+                .status(Response.Status.CREATED)
+                .entity(gson.toJson(ok))
+                .build();
+        } catch (EntidadNoExisteException ex) {
             r = Response
-                    .status(Response.Status.CREATED)
-                    .entity(gson.toJson(modificado))
+                    .status(Response.Status.ACCEPTED)
+                    .entity(ret)
                     .build();
         }
         return r;
@@ -129,12 +174,20 @@ public class CadetResource {
     @Path("getCadetEntity/{id}")
     @Consumes(MediaType.TEXT_HTML)
     public String getCadeteEntidad(@PathParam("id") String id) 
-    throws EntidadNoExisteException {
+        throws EntidadNoExisteException {
+        Gson gson = new Gson();
+        String existe = "El cadete no existe en la base de datos";
         CadetEntity unCadet = new CadetEntity();
         unCadet.setId(Long.parseLong(id));
+        try {
+        if (!cadetBean.existeCadete(unCadet.getCi())) {
+                return "-5";
+        }
         CadetEntity cad = cadetBean.buscarCadeteEntidad(unCadet.getId());
-        Gson gson = new Gson();
         String retorno  = gson.toJson(cad, CadetEntity.class);
         return retorno;
+        } catch (PersistenceException e) {
+            return "-5";
+        }        
     }
 }

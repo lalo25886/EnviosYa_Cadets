@@ -10,6 +10,7 @@ import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import org.apache.log4j.Logger;
 
 /**
@@ -38,72 +39,93 @@ public CadetEntity agregar(CadetEntity unCadete) throws DatoErroneoException {
         return unCadete;
     }
 
-    public CadetEntity agregar(String body) 
-            throws DatoErroneoException {
-       CadetEntity unCadete = null;
-        try {
-            Gson gson = new Gson();
-            unCadete = gson.fromJson(body, CadetEntity.class);
-             em.persist(unCadete);
-        } catch (Exception e) {
-            log.error("Error al agregar:" + this.getClass().toString()
-                    + e.getMessage());
-            throw new DatoErroneoException("Error al agregar un cadete. "
-                    + "Verifique los datos ingresados.");
-        }
-       return unCadete;
-    }
-    public CadetEntity modificar(Long id, String nombreNuevo)
+//    public CadetEntity agregar(String body) 
+//            throws DatoErroneoException {
+//       CadetEntity unCadete = null;
+//        try {
+//            Gson gson = new Gson();
+//            unCadete = gson.fromJson(body, CadetEntity.class);
+//             em.persist(unCadete);
+//        } catch (Exception e) {
+//            log.error("Error al agregar:" + this.getClass().toString()
+//                    + e.getMessage());
+//            throw new DatoErroneoException("Error al agregar un cadete. "
+//                    + "Verifique los datos ingresados.");
+//        }
+//       return unCadete;
+//    }
+    public boolean existeCadete(String ci)
             throws EntidadNoExisteException {
+        List<CadetEntity> listaCadetes;
+        boolean retorno = false;
         try {
-            CadetEntity unCadete = em.find(CadetEntity.class, id);
-            unCadete.setNombre(nombreNuevo);
-            em.merge(unCadete);
-            return unCadete;
-        } catch (Exception e) {
-            log.error("Error al modificar:" + this.getClass().toString()
-                    + e.getMessage());
-            throw new EntidadNoExisteException("Error al modificar un cadete. "
-                    + "El cadete con el id: " + id + " no se encuentra.");
+            listaCadetes = em.createQuery("SELECT u FROM CadetEntity u "
+            + "WHERE u.ci = :ci")
+            .setParameter("ci", ci).getResultList();
+
+            if (!listaCadetes.isEmpty()) {
+                retorno = true;
+            }
+        } catch (PersistenceException e) {
+            log.error("Error existeCadete: " + e.getMessage());
+            throw new EntidadNoExisteException("Error en existeCadete");
         }
+        return retorno;
     }
+//    public CadetEntity modificar(Long id, String nombreNuevo)
+//            throws EntidadNoExisteException {
+//        try {
+//            CadetEntity unCadete = em.find(CadetEntity.class, id);
+//            unCadete.setNombre(nombreNuevo);
+//            em.merge(unCadete);
+//            em.flush();
+//            return unCadete;
+//        } catch (Exception e) {
+//            log.error("Error al modificar:" + this.getClass().toString()
+//                    + e.getMessage());
+//            throw new EntidadNoExisteException("Error al modificar un cadete. "
+//                    + "El cadete con el id: " + id + " no se encuentra.");
+//        }
+//    }
       public CadetEntity modificar(CadetEntity unCadete) 
               throws EntidadNoExisteException {
        try {
         em.merge(unCadete);
-        return unCadete;
-        } catch (Exception e) {
+        em.flush();
+        } catch (PersistenceException e) {
             log.error("Error al modificar:" + this.getClass().toString()
                     + e.getMessage());
             throw new EntidadNoExisteException("Error al modificar un cadete. "
                     + "El cadete con el id: " + unCadete.getId() + " no "
                     + "se encuentra.");
         }
+       return unCadete;
     }
-     public boolean eliminar(CadetEntity unCadete) {
+     public boolean eliminar(CadetEntity unCadete)
+             throws EntidadNoExisteException {
         try {
             CadetEntity aBorrar = em.find(CadetEntity.class,
                     unCadete.getId());
             em.remove(aBorrar);
             return true;
-        } catch (Exception e) {
+        } catch (PersistenceException e) {
             log.error("Error al eliminar:" + this.getClass().toString()
                     + e.getMessage());
+            throw new EntidadNoExisteException("Error al eliminar un cadete.");
         }
-        return false;
     }
 
-    public boolean eliminar(Long id) {
-        try {
-        CadetEntity unCadete = em.find(CadetEntity.class, id);
-        em.remove(unCadete);
-        return true;
-         } catch (Exception e) {
-            log.error("Error al eliminar:" + this.getClass().toString()
-                    + e.getMessage());
-        }
-        return false;
-    }
+//    public boolean eliminar(Long id) {
+//        try {
+//        CadetEntity unCadete = em.find(CadetEntity.class, id);
+//        em.remove(unCadete);
+//        return true;
+//         } catch (Exception e) {
+//            log.error("Error al eliminar:" + this.getClass().toString()
+//                    + e.getMessage());
+//        }
+//        return false;
+//    }
 
     public List<CadetEntity> listar() {        
         List<CadetEntity> list =
@@ -111,37 +133,37 @@ public CadetEntity agregar(CadetEntity unCadete) throws DatoErroneoException {
         return list;
     }
 
-    public Cadet buscar(Long id)  throws EntidadNoExisteException {
-        CadetEntity unCadeteEntity = null;
-        Cadet unCadete = null;
-        try {
-            unCadeteEntity = em.find(CadetEntity.class, id);
-            unCadete = new Cadet();
-            unCadete .setId(unCadeteEntity.getId());
-            unCadete .setNombre(unCadeteEntity.getNombre());
-        } catch (Exception e) {
-            throw new EntidadNoExisteException("Error al buscar un cadete. "
-                    + "El cadete con el id: " + id + " no "
-                    + "se encuentra.");
-        }
-        return unCadete;
-    }
+//    public Cadet buscar(Long id)  throws EntidadNoExisteException {
+//        CadetEntity unCadeteEntity = null;
+//        Cadet unCadete = null;
+//        try {
+//            unCadeteEntity = em.find(CadetEntity.class, id);
+//            unCadete = new Cadet();
+//            unCadete .setId(unCadeteEntity.getId());
+//            unCadete .setNombre(unCadeteEntity.getNombre());
+//        } catch (Exception e) {
+//            throw new EntidadNoExisteException("Error al buscar un cadete. "
+//                    + "El cadete con el id: " + id + " no "
+//                    + "se encuentra.");
+//        }
+//        return unCadete;
+//    }
 
-    public List<CadetEntity> buscar(String nombre) 
-            throws EntidadNoExisteException {
-        List<CadetEntity> listaCadetes = null;
-        try {
-            listaCadetes =
-            em.createQuery("select c from CadetEntity c "
-            + "where c.nombre = :nombre")
-            .setParameter("nombre", nombre).getResultList();
-        } catch (Exception e) {
-            throw new EntidadNoExisteException("Error al buscar un cadete. "
-                    + "El cadete con el nombre: " + nombre + " no "
-                    + "se encuentra.");
-        }
-        return listaCadetes;
-    }
+//    public List<CadetEntity> buscar(String nombre) 
+//            throws EntidadNoExisteException {
+//        List<CadetEntity> listaCadetes = null;
+//        try {
+//            listaCadetes =
+//            em.createQuery("select c from CadetEntity c "
+//            + "where c.nombre = :nombre")
+//            .setParameter("nombre", nombre).getResultList();
+//        } catch (Exception e) {
+//            throw new EntidadNoExisteException("Error al buscar un cadete. "
+//                    + "El cadete con el nombre: " + nombre + " no "
+//                    + "se encuentra.");
+//        }
+//        return listaCadetes;
+//    }
     public String buscarCadete(Long id) throws EntidadNoExisteException {
         CadetEntity unCadeteEntity = null;
         try {
