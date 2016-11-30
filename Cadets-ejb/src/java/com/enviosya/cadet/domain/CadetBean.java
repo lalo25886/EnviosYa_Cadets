@@ -153,4 +153,15 @@ public CadetEntity agregar(CadetEntity unCadete) throws DatoErroneoException {
         }
         return unCadeteEntity.getEmail();
     }
+    public CadetEntity buscarCadeteEntidad(Long id) throws EntidadNoExisteException {
+        CadetEntity unCadeteEntity = null;
+        try {
+            unCadeteEntity = em.find(CadetEntity.class, id);
+        } catch (Exception e) {
+            throw new EntidadNoExisteException("Error al buscar el mail"
+                    + " del cadete con id: " + id + ". El cadete no "
+                    + "se encuentra.");
+        }
+        return unCadeteEntity;
+    }
 }

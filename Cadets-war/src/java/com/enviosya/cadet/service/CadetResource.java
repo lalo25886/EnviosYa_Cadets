@@ -125,4 +125,16 @@ public class CadetResource {
         }
         return r;
     }
+    @GET
+    @Path("getCadetEntity/{id}")
+    @Consumes(MediaType.TEXT_HTML)
+    public String getCadeteEntidad(@PathParam("id") String id) 
+    throws EntidadNoExisteException {
+        CadetEntity unCadet = new CadetEntity();
+        unCadet.setId(Long.parseLong(id));
+        CadetEntity cad = cadetBean.buscarCadeteEntidad(unCadet.getId());
+        Gson gson = new Gson();
+        String retorno  = gson.toJson(cad, CadetEntity.class);
+        return retorno;
+    }
 }
