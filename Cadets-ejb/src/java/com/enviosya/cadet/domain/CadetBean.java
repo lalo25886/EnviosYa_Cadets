@@ -129,7 +129,10 @@ public CadetEntity agregar(CadetEntity unCadete) throws DatoErroneoException {
 
     public List<CadetEntity> listar() {        
         List<CadetEntity> list =
-                em.createQuery("select u from CadetEntity u").getResultList();
+                
+                em.createQuery("select u from CadetEntity u")
+                        .setMaxResults(4)
+                        .getResultList();
         return list;
     }
 
