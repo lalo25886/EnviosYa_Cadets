@@ -52,11 +52,19 @@ public class CadetResource {
     @GET
     @Path("getCadet/{id}")
     @Consumes(MediaType.TEXT_HTML)
-    public String getCadeteNotificar(@PathParam("id") String id) 
-    throws EntidadNoExisteException {
+    public String getCadeteNotificar(@PathParam("id") String id) {
         CadetEntity unCadet = new CadetEntity();
         unCadet.setId(Long.parseLong(id));
-        String retorno = cadetBean.buscarCadete(unCadet.getId());
+        String error = "-5";
+        String retorno  = "";
+        try {
+            retorno = cadetBean.buscarCadete(unCadet.getId());
+            if (retorno.equalsIgnoreCase("")) {
+                return error;
+            }
+        } catch (EntidadNoExisteException e) {
+             return error;
+        }
         return retorno;
     }
 
